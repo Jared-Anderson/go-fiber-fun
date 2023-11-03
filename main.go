@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"go-fun/database"
-	albumpkg "go-fun/pkgs/album"
-	artistpkg "go-fun/pkgs/artist"
+	album "go-fun/pkgs/album"
+	artist "go-fun/pkgs/artist"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	defer db.Close() // Don't forget to close the connection when done
 
 	// Get all artists
-	artists, err := artistpkg.GetArtists(db)
+	artists, err := artist.GetArtists(db)
 	if err != nil {
 		fmt.Println("Error getting artists:", err)
 		return
@@ -26,7 +26,7 @@ func main() {
 	fmt.Println(artists)
 
 	// Get all artists
-	albums, err := albumpkg.GetAlbumsByArtistId(db, artists[0].ArtistId)
+	albums, err := album.GetAlbumsByArtistId(db, artists[0].ArtistId)
 	if err != nil {
 		fmt.Println("Error getting artists:", err)
 		return
