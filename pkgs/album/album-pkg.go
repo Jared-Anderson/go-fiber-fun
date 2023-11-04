@@ -7,7 +7,7 @@ import (
 	"go-fun/structs"
 )
 
-func GetAlbumsByArtistId(db *sql.DB, AlbumId int) ([]structs.Album, error) {
+func GetAlbumsByArtistId(db *sql.DB, AlbumId int64) ([]structs.Album, error) {
 	albums, er := database.GetAlbumsByArtistId(db, AlbumId)
 	if er != nil {
 		fmt.Println("Error getting artists")

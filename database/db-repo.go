@@ -19,7 +19,6 @@ func ConnectToDatabase(connString string) (*sql.DB, error) {
 }
 
 func GetArtists(db *sql.DB) ([]structs.Artist, error) {
-	fmt.Println("GetArtists")
 	query := "SELECT ArtistId, Name FROM Artist"
 	rows, err := db.Query(query)
 	if err != nil {
@@ -39,8 +38,7 @@ func GetArtists(db *sql.DB) ([]structs.Artist, error) {
 	return artists, nil
 }
 
-func GetAlbumsByArtistId(db *sql.DB, artistId int) ([]structs.Album, error) {
-	fmt.Println("GetAlbumsByArtistId")
+func GetAlbumsByArtistId(db *sql.DB, artistId int64) ([]structs.Album, error) {
 	query := "SELECT AlbumId, Title FROM Album WHERE ArtistId = ?"
 	rows, err := db.Query(query, artistId)
 	if err != nil {

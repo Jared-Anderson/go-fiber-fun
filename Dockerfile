@@ -3,7 +3,7 @@ FROM golang:latest
 
 # Set environment variables
 ENV ENVIRONMENT=Development
-ENV POSTGRES_CONNECTION_STRING=another_value
+ENV DB_CONNECTION_STRING=another_value
 
 # Set the working directory inside the container
 WORKDIR /app
