@@ -1,20 +1,34 @@
 package api
 
 import (
-	// Import go fiber
-	"database/sql"
-	"strconv"
-
-	"github.com/gofiber/fiber/v2"
-	// Import go fiber middleware
 	"fmt"
 	"go-fun/database"
-	album "go-fun/pkgs/album"
-	artist "go-fun/pkgs/artist"
+
+	"github.com/gofiber/fiber/v2"
+
+	_ "go-fun/docs/go-fiber-fun" // This line is necessary for go-swagger to find your docs!
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	fiberSwagger "github.com/swaggo/fiber-swagger" // Import Fiber-Swagger middleware
 )
 
+// cmd: swag init -g pkgs/api/api.go --output docs/go-fiber-fun
+
+// @title Fiber Swagger Example API
+// @version 2.0
+// @description This is a sample server server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /
+// @schemes http
 // StartServer starts the server
 func StartServer(dbConnStr string) {
 	// Connect to the database
@@ -29,60 +43,37 @@ func StartServer(dbConnStr string) {
 	app := fiber.New()
 	app.Use(cors.New())
 
-	app.Get("/artists", func(c *fiber.Ctx) error {
-		return c.SendString(getAllArtists(db))
-	})
-
-	app.Get("/albums", func(c *fiber.Ctx) error {
-		data := struct {
-			Name string
-		}{
-			Name: "John",
-		}
-		return c.Render("views/artist.html", data)
-	})
-
-	app.Get("/albums/:id", func(c *fiber.Ctx) error {
-		id := c.Params("id")
-		idInt, err := strconv.ParseInt(id, 10, 64)
-		if err != nil {
-			return c.SendString("Invalid id")
-		}
-		return c.SendString(getAlbumsByArtistId(db, idInt))
-	})
+	// Register routes
+	app.Get("/health", healthCheck)
+	registerSwaggerRoutes(app)
+	RegisterArtistRoutes(app, db)
+	RegisterAlbumRoutes(app, db)
 
 	// Start server on http://localhost:8080
 	fmt.Println("Server started on port 8080")
 	app.Listen(":8080")
 }
 
-func getAllArtists(db *sql.DB) string {
-	fmt.Println("getAllArtists")
-	// Get all artists
-	artists, err := artist.GetArtists(db)
-	if err != nil {
-		fmt.Println("Error getting artists:", err)
-		return "Nothing to return."
-	}
-
-	res := ""
-	for _, artist := range artists {
-		res += strconv.Itoa(artist.ArtistId) + ". " + artist.Name + "\n"
-	}
-	return res
+func registerSwaggerRoutes(app *fiber.App) {
+	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 }
 
-func getAlbumsByArtistId(db *sql.DB, id int64) string {
-	fmt.Println("getAlbumsByArtistId with id: " + strconv.Itoa(int(id)))
-	// Get all albums by artist id
-	albums, err := album.GetAlbumsByArtistId(db, id)
-	if err != nil {
-		fmt.Println("Error getting artists:", err)
-		return "Nothing to return."
+// HealthCheck godoc
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /health [get]
+func healthCheck(c *fiber.Ctx) error {
+	res := map[string]interface{}{
+		"data": "Server is up and running",
 	}
-	res := ""
-	for _, album := range albums {
-		res += strconv.Itoa(album.AlbumId) + ". " + album.Title + "\n"
+
+	if err := c.JSON(res); err != nil {
+		return err
 	}
-	return res
+
+	return nil
 }

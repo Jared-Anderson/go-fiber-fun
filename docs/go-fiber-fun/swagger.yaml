@@ -1,0 +1,121 @@
+basePath: /
+definitions:
+  structs.Album:
+    properties:
+      albumId:
+        type: integer
+      artistId:
+        type: integer
+      title:
+        type: string
+    type: object
+  structs.Artist:
+    properties:
+      artistId:
+        type: integer
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Fiber Swagger Example API
+  version: "2.0"
+paths:
+  /albums/{id}:
+    get:
+      description: Get a specific Album by its ID
+      operationId: get-album
+      parameters:
+      - description: Album ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.Album'
+      summary: Get a specific Album by ID
+  /artists:
+    get:
+      description: Get a list of all artists in the database
+      operationId: get-artists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/structs.Artist'
+            type: array
+      summary: Get a list of all artists
+  /artists/{id}:
+    get:
+      description: Get a specific artist by its ID
+      operationId: get-artist-by-id
+      parameters:
+      - description: Artist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.Artist'
+      summary: Get a specific artist by ID
+  /artists/{id}/albums:
+    get:
+      description: Get all albums for a specific artist ID
+      operationId: get-artist-albums-by-id
+      parameters:
+      - description: Artist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/structs.Album'
+            type: array
+      summary: Get a specific artists albums by artist ID
+  /health:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - root
+schemes:
+- http
+swagger: "2.0"
